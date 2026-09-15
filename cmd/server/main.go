@@ -14,14 +14,17 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"CineStream/internal/auth"
 	"CineStream/internal/config"
 	"CineStream/internal/database"
+	"CineStream/internal/response"
+	"CineStream/internal/showtime"
 )
 
 func main() {
 	cfg := config.LoadConfig()
 
-	// Database
+	// db
 	db, err := database.NewPostgresConnection(cfg)
 	if err != nil {
 		log.Fatalf("Database initialization failed: %v", err)
@@ -34,29 +37,43 @@ func main() {
 		}
 	}()
 
-	// Echo
+	// module
+	authRepo := auth.NewRepository(db)
+	authService := auth.NewService(authRepo, cfg)
+	authHandler := auth.NewHandler(authService)
+
+	showtimeRepo := showtime.NewRepository(db)
+	showtimeService := showtime.NewService(showtimeRepo)
+	showtimeHandler := showtime.NewHandler(showtimeService)
+
+	// echo
 	e := echo.New()
 	e.HideBanner = true
 
-	// Middleware
-	e.Use(middleware.Logger())
+	// custom error handler
+	e.HTTPErrorHandler = response.CustomHTTPErrorHandler
+
+	// middleware
+	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 
-	// Routes
+	// health check
 	e.GET("/health", func(c echo.Context) error {
 		if err := db.PingContext(c.Request().Context()); err != nil {
-			return c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
-				"status":  "UNHEALTHY",
-				"message": "Database ping failed",
-			})
+			return response.Error(c, http.StatusServiceUnavailable, "Database ping failed")
 		}
-		return c.JSON(http.StatusOK, map[string]interface{}{
+		return response.Success(c, http.StatusOK, "Service is healthy", map[string]interface{}{
 			"status":    "HEALTHY",
 			"timestamp": time.Now().Format(time.RFC3339),
 			"service":   "CineStream API",
 		})
 	})
 
+	// routes
+	auth.RegisterRoutes(e, authHandler)
+	showtime.RegisterRoutes(e, showtimeHandler, cfg)
+
+	// server start
 	serverAddress := fmt.Sprintf(":%s", cfg.AppPort)
 	go func() {
 		log.Printf("Starting CineStream API server on port %s (%s mode)", cfg.AppPort, cfg.AppEnv)

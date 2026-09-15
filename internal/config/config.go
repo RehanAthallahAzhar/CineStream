@@ -21,6 +21,8 @@ type Config struct {
 	DBMaxOpenConns           int
 	DBMaxIdleConns           int
 	DBConnMaxLifetimeMinutes time.Duration
+	JWTSecret                string
+	JWTExpirationHours       int
 }
 
 func LoadConfig() *Config {
@@ -40,6 +42,8 @@ func LoadConfig() *Config {
 		DBMaxOpenConns:           getEnvAsInt("DB_MAX_OPEN_CONNS", 25),
 		DBMaxIdleConns:           getEnvAsInt("DB_MAX_IDLE_CONNS", 5),
 		DBConnMaxLifetimeMinutes: time.Duration(getEnvAsInt("DB_CONN_MAX_LIFETIME_MINUTES", 15)) * time.Minute,
+		JWTSecret:                getEnv("JWT_SECRET", "super-secret-key-cinestream-2026"),
+		JWTExpirationHours:       getEnvAsInt("JWT_EXPIRATION_HOURS", 24),
 	}
 }
 

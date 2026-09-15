@@ -1,0 +1,233 @@
+{
+  "info": {
+    "_postman_id": "48ac6440-3fd0-42fd-9e36-a95f42dc1e09",
+    "name": "CineStream",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "24700214"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"admin@gmail.com\",\r\n    \"password\": \"abc123\",\r\n    \"full_name\": \"Rehan Athallah Azhar\",\r\n    \"role\": \"ADMIN\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Mengambil response body dalam format JSON\r",
+              "var jsonData = pm.response.json();\r",
+              "\r",
+              "// Memeriksa apakah ada properti \"token\" di dalam response\r",
+              "if (jsonData && jsonData.data.token) {\r",
+              "    // Menyimpan nilai token ke environment variable bernama \"auth_token\"\r",
+              "    pm.environment.set(\"auth_token\", jsonData.data.token);\r",
+              "    console.log(\"Auth Token berhasil disimpan!\");\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"admin@gmail.com\",\r\n    \"password\": \"abc123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Showtimes",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"movie_id\": \"e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55\",\r\n    \"studio_id\": \"d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44\",\r\n    \"start_time\": \"2026-09-20T14:00:00Z\",\r\n    \"end_time\": \"2026-09-20T16:30:00Z\",\r\n    \"price\": 50000,\r\n    \"status\": \"SCHEDULED\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/showtimes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "showtimes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Showtimes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/showtimes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "showtimes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Showtime By Id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/showtimes/69eb7ad3-7b05-449f-9480-cb6ecdb56d12",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "showtimes",
+            "69eb7ad3-7b05-449f-9480-cb6ecdb56d12"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Showtime",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"movie_id\": \"e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55\",\r\n    \"studio_id\": \"d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44\",\r\n    \"start_time\": \"2026-09-20T15:00:00Z\",\r\n    \"end_time\": \"2026-09-20T17:30:00Z\",\r\n    \"price\": 60000,\r\n    \"status\": \"SCHEDULED\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/showtimes/69eb7ad3-7b05-449f-9480-cb6ecdb56d12",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "showtimes",
+            "69eb7ad3-7b05-449f-9480-cb6ecdb56d12"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Showtime",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/showtimes/69eb7ad3-7b05-449f-9480-cb6ecdb56d12",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "showtimes",
+            "69eb7ad3-7b05-449f-9480-cb6ecdb56d12"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
